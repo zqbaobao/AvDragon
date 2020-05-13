@@ -125,6 +125,15 @@ class Game_Controller{
 
     remove_player(player){
         this.players.splice(player.array_index, 1)
+        this.update_rest_players_index();
+    }
+
+    update_rest_players_index() {
+        for(let i = 0; i < this.players.length; i++) {
+            if (this.players[i].array_index != i) {
+                this.players[i].array_index = i;
+            }
+        }
     }
 
     add_player(player){
