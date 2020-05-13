@@ -102,9 +102,8 @@ class Game_Controller{
         /*game stage info
         /*
         0: somebody not ready or players not enough
-        1: everyone is ready, going to start
-        2: started
-        3: ended
+        1: started
+        other stages are removed since they are not used
         */
         this.game_stage = 0
     }
