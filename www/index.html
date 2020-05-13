@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>洛杉矶深夜 AV Dragon Old Squad</title>
+		<meta name="author" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="styles/main.css">
+	</head>
+	<body>
+		<div id="status_log">
+			<p id="p_inner_round">第1轮选人</p>
+			<p id="p_outer_round">准备第1次任务</p>
+		</div>
+		<div style="display: flex">
+			<div id="player_list">
+				<!-- <div class="info_row">
+					<div><p>cccc</p></div>
+					<div><p>dsgsd</p></div>
+					<div><p>bfdbdf</p></div>
+					<div><p>dfbd</p></div>
+					<div><p>dfjrth</p></div>
+					<div><p>fbsv</p></div>
+					<div><p>vffdg</p></div>
+					<div><button>Pick</button></div>
+					<div><button>Kill</button></div>
+				</div>
+				<div class="info_row">
+					<div><p>cccc</p></div>
+					<div><p>dsgsd</p></div>
+					<div><p>bfdbdf</p></div>
+					<div><p>dfbd</p></div>
+					<div><p>dfjrth</p></div>
+					<div><p>fbsv</p></div>
+					<div><p>vffdg</p></div>
+					<div><button>Pick</button></div>
+					<div><button>Kill</button></div>
+				</div> -->
+			</div>
+			<div>
+				<p id="mission_history"></p>
+			</div>
+		</div>
+		<div id="vote_buttons">
+			<button id="agree_button">同意</button>
+			<button id="disagree_button">反对</button>
+		</div>
+		<div id="mission_buttons">
+			<button id="success_button">Success</button>
+			<button id="failure_button">Failure</button>
+		</div>
+		
+		<div id="login_wrapper">
+            <p id="connection_info">connecting <br> to server...</p>
+            <div id="nick_wrapper">
+                <input type="text" placeHolder="nickname" id="nickname_input" />
+                <input type="button" value="Ready" id="ready_button" />
+            </div>
+        </div>
+		<div id="result_wrapper">
+            <p id="kill_info"></p>
+            <p id="result_info"></p>
+            <input type="button" value="Play Again" id="again_button" />
+            </div>
+        </div>
+		<script src="scripts/myscript.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+	</body>
+</html>

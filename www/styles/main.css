@@ -1,0 +1,197 @@
+html, body {
+    margin: 0;
+    background-color: #efefef;
+    font-family: sans-serif;
+}
+#login_wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(5, 5, 5, .6);
+    text-align: center;
+    color: #fff;
+    display: block;
+    padding-top: 280px;
+}
+#result_wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(5, 5, 5, .6);
+    text-align: center;
+    color: #fff;
+    display: none;
+    padding-top: 280px;
+    font-size: 20px;
+}
+#nick_wrapper {
+    display: none;
+}
+#nickname_input{
+    font-size: 20px;
+}
+#ready_button{
+    font-size: 20px;
+}
+#status_log{
+    text-align: center;
+    display: none;
+    width: 1000px;
+}
+.info_row {
+    display: flex;
+    margin-bottom: 2px;
+}
+#player_list {
+    margin-top: 5px;
+    margin-left: 50px;
+}
+div.info_row {
+    border: solid;
+    width: 900px;
+    margin-top: 15px;
+}
+div.info_row > div{
+    height: 60px;
+    width: 90px;
+    border: none;
+    text-align: center;
+    margin-left: 5px;
+    font-size: 16px;
+    display: block;
+}
+div.info_row > div > button{
+    height: 40px;
+    width: 70px;
+    font-size: 16px;
+    margin-top: 10px;
+    display: none;
+}
+div.info_row > div > p{
+    height: inherit;
+    width: inherit;
+    display: block;
+}
+#vote_buttons{
+    display: none;
+    margin-left: 50px;
+    margin-top: 50px;
+}
+#vote_buttons > button{
+    height: 60px;
+    width: 100px;
+    font-size: 20px;
+    margin-left: 15px;
+    display: block;
+}
+#mission_buttons{
+    display: none;
+    margin-left: 500px;
+    margin-top: 50px;
+}
+#mission_buttons > button{
+    height: 60px;
+    width: 100px;
+    font-size: 20px;
+    margin-left: 15px;
+    display: block;
+}
+#mission_history{
+    margin-left: 100px;
+    margin-top: 0px;
+    font-size: 16px;
+}
+
+/*
+.wrapper {
+    width: 500px;
+    height: 640px;
+    padding: 5px;
+    margin: 0 auto;
+    background-color: #ddd;
+}
+.banner {
+    height: 80px;
+    width: 100%;
+}
+.banner p {
+    float: left;
+    display: inline-block;
+}
+.controls {
+    display: flex;
+    position: relative;
+    font-size:20px;
+}
+#historyMsg {
+    height: 400px;
+    background-color: #fff;
+    overflow: auto;
+    padding: 2px;
+}
+#historyMsg img {
+    max-width: 99%;
+}
+.timespan {
+    color: #ddd;
+}
+.items {
+    height: 30px;
+}
+#colorStyle {
+    width: 50px;
+    border: none;
+    padding: 0;
+}
+/*custom the file input*/
+
+.imageLable {
+    position: relative;
+}
+#sendImage {
+    position: absolute;
+    width: 52px;
+    left: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+/*end custom file input*/
+
+#messageInput {
+    width: 440px;
+    max-width: 440px;
+    height: 90px;
+    max-height: 90px;
+}
+#sendBtn {
+    width: 50px;
+    height: 96px;
+    float: right;
+}
+#emojiWrapper {
+    display: none;
+    width: 500px;
+    bottom: 105px;
+    position: absolute;
+    background-color: #aaa;
+    box-shadow: 0 0 10px #555;
+}
+#emojiWrapper img {
+    margin: 2px;
+    padding: 2px;
+    width: 25px;
+    height: 25px;
+}
+#emojiWrapper img:hover {
+    background-color: blue;
+}
+.emoji{
+    display: inline;
+}
+footer {
+    text-align: center;
+}*/
