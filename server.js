@@ -321,7 +321,7 @@ io.on('connection', function(socket) {
 
         game_controller.add_player(player)
         console.log("ready players: " + game_controller.get_all_player_names())
-        
+
         game_controller.signal_update_ready_info()
 
     
@@ -431,6 +431,7 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
         console.log("disconnect")
         console.log("connected = " + count_sockets())
+
         if(game_controller.game_stage == 0){
 
             if(game_controller.players.includes(player)){
@@ -443,12 +444,15 @@ io.on('connection', function(socket) {
         }
         else{
             if(game_controller.players.includes(player)){
-                console.log("player " + player.name + " left.")
+                console.log("player " + player.name + " left in game.")
                 game_controller.handle_draw(player.name)
             }
             else{
                 console.log("someone left.")
             }
+        }
+        if(count_sockets() == 0){
+            game_controller.init() //hack for fixing ghost players for now
         }
     })
 
