@@ -3,7 +3,8 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server)
 app.use('/', express.static(__dirname + '/www'))
-server.listen(80)
+const port = process.env.PORT || 3000
+server.listen(port)
 
 var all_sockets = io.sockets.sockets
 function count_sockets(){
