@@ -13,6 +13,8 @@ function count_sockets(){
 
 var socket2player = {}
 
+// this is the Player class
+
 class Player{
     constructor(socket){
         console.log("created new player")
