@@ -316,11 +316,14 @@ io.on('connection', function(socket) {
         if(game_controller.game_stage != 0){
             return
         }
-
+        console.log("player " + name + " is now ready")
         player.name = name
 
         game_controller.add_player(player)
+        console.log("ready players: " + game_controller.get_all_player_names())
+        
         game_controller.signal_update_ready_info()
+
     
         if(game_controller.players.length == 6 && count_sockets() == 6){
 
