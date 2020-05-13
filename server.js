@@ -4,7 +4,7 @@ var express = require('express'),
     io = require('socket.io').listen(server)
 app.use('/', express.static(__dirname + '/www'))
 const port = process.env.PORT || 3000
-server.listen(port)
+server.listen(80)
 
 var all_sockets = io.sockets.sockets
 function count_sockets(){
@@ -136,7 +136,7 @@ class Game_Controller{
         this.game_stage = 1;
         //elect a leader first
         this.leader = Math.floor(Math.random() * game_controller.players.length)
-        console.log("initial leader is " + this.leader)
+        
         for(const player of this.players){
             player.signal_game_start()
         }
@@ -156,7 +156,7 @@ class Game_Controller{
     }
 
     signal_mission_start(){
-        console.log("mission starts")
+        
         let group_ids = []
         for(let player of this.mission_group){
             group_ids.push(player.array_index)
@@ -183,14 +183,14 @@ class Game_Controller{
             }
             player.agree = null
         }
-        console.log(count_agree)
+        
         if(count_agree > this.players.length / 2){
             this.signal_mission_start()
         }
         else{
             this.inner_round++
             this.mission_group = []
-            console.log("new inner_round is " + this.inner_round)
+            
             this.signal_pick_group()
         }
     }
@@ -232,12 +232,12 @@ class Game_Controller{
         io.sockets.emit("mission_result", mission_info, this.outer_round + 1)
 
         if(this.count_wins == 3){
-            console.log("kill_start")
+            
             io.sockets.emit("kill_start")
             return
         }
         if(this.outer_round + 1 - this.count_wins == 3){
-            console.log("lost")
+            
             io.sockets.emit("lost", this.roles, false)
             this.init()
             return
@@ -308,6 +308,7 @@ io.on('connection', function(socket) {
             console.log("connected while game started, connected = " + count_sockets())
             socket.emit("please_wait")
         }
+        console.log(" ")
     })
 
     socket.on('ready_request', function(name) {
@@ -330,6 +331,7 @@ io.on('connection', function(socket) {
             console.log(game_controller.get_all_player_names())
             console.log(game_controller.get_all_roles())
             console.log(game_controller.players.length)
+            console.log(" ")
 
             game_controller.signal_game_start()
         }
@@ -343,7 +345,7 @@ io.on('connection', function(socket) {
 
         game_controller.count_started++
         if(game_controller.count_started == game_controller.players.length){
-            console.log("all started")
+  
             game_controller.signal_pick_group()
         }
     })
@@ -354,7 +356,6 @@ io.on('connection', function(socket) {
             return
         }
 
-        console.log("group picked : " + group)
         let id_array = group.split(" ")
         for(let i of id_array){
             i = parseInt(i)
@@ -386,7 +387,7 @@ io.on('connection', function(socket) {
         }
         game_controller.count_voted++
         if(game_controller.count_voted == game_controller.players.length){
-                console.log("all voted")
+
                 game_controller.handle_vote_result()
         }
     })
@@ -405,7 +406,7 @@ io.on('connection', function(socket) {
         }
         game_controller.count_missioned++
         if(game_controller.count_missioned == game_controller.mission_group.length){
-                console.log("all missioned")
+
                 game_controller.handle_mission_result()
         }
     })
@@ -416,7 +417,6 @@ io.on('connection', function(socket) {
             return
         }
 
-        console.log("kill " + id)
         if(game_controller.players[parseInt(id)].role == "梅林"){
             game_controller.handle_lost()
         }
@@ -433,6 +433,7 @@ io.on('connection', function(socket) {
             if(game_controller.players.includes(player)){
                 console.log("player " + player.name + " left.")
                 game_controller.remove_player(player)
+                console.log("remaining players: " + game_controller.get_all_player_names())
             }
 
             game_controller.signal_update_ready_info()
