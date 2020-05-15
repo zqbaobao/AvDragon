@@ -4,7 +4,7 @@ var express = require('express'),
     io = require('socket.io').listen(server)
 app.use('/', express.static(__dirname + '/www'))
 const port = process.env.PORT || 3000
-server.listen(80)
+server.listen(port)
 
 var all_sockets = io.sockets.sockets
 function count_sockets(){
@@ -21,20 +21,20 @@ class Rules{
                 "派西": ["梅林", "莫甘娜"],
                 "莫甘娜": ["刺客"],
                 "刺客": ["莫甘娜"]
-            }, 
+            },
             7: {
                 "梅林": ["刺客", "莫甘娜", "奥伯伦"],
                 "派西": ["梅林", "莫甘娜"],
                 "莫甘娜": ["刺客"],
                 "刺客": ["莫甘娜"]
-            }, 
+            },
             8: {
                 "梅林": ["刺客", "莫甘娜", "坏人"],
                 "派西": ["梅林", "莫甘娜"],
                 "莫甘娜": ["刺客", "坏人"],
                 "刺客": ["莫甘娜", "坏人"],
                 "坏人": ["刺客", "莫甘娜"]
-            }, 
+            },
             9: {
                 "梅林": ["刺客", "莫甘娜"],
                 "派西": ["梅林", "莫甘娜"],
@@ -205,7 +205,7 @@ class Game_Controller{
         this.game_stage = 1;
         //elect a leader first
         this.leader = Math.floor(Math.random() * game_controller.players.length)
-        
+
         for(const player of this.players){
             player.signal_game_start()
         }
@@ -225,7 +225,7 @@ class Game_Controller{
     }
 
     signal_mission_start(forced){
-        
+
         let group = []
         for(let player of this.mission_group){
             group.push(player.array_index)
@@ -251,7 +251,7 @@ class Game_Controller{
             }
             player.agree = null
         }
-        
+
         if(count_agree > this.players.length / 2){
 
             io.sockets.emit("vote_result", true, this.inner_round, vote_result)
@@ -263,7 +263,7 @@ class Game_Controller{
 
             this.inner_round++
             this.mission_group = []
-            
+
             this.signal_pick_group()
         }
     }
@@ -292,7 +292,7 @@ class Game_Controller{
         else{
             mission_info += "任务失败！\n";
         }
-        
+
         mission_info += "Success : " + count_success + "    ";
         mission_info += "Failure : " + (this.mission_group.length - count_success) + "\n";
         mission_info += "队长 : " + this.players[(this.leader + this.players.length - 1) % this.players.length].name + "\n"
@@ -305,12 +305,12 @@ class Game_Controller{
         io.sockets.emit("mission_result", win_flag, this.outer_round, mission_info, (this.leader + this.players.length - 1) % this.players.length)
 
         if(this.count_wins == 3){
-            
+
             io.sockets.emit("kill_start")
             return
         }
         if(this.outer_round + 1 - this.count_wins == 3){
-            
+
             io.sockets.emit("lost", this.roles, false)
             this.init()
             return
@@ -391,7 +391,7 @@ io.on('connection', function(socket) {
 
         game_controller.signal_update_ready_info()
 
-    
+
         if(game_controller.players.length == count_sockets() && count_sockets() >= 6 && count_sockets() <= 9){
 
             //init rules for this game
@@ -441,7 +441,7 @@ io.on('connection', function(socket) {
         else{
             game_controller.signal_vote(group)
         }
-        
+
     })
 
     socket.on('vote_done', function(vote) {
