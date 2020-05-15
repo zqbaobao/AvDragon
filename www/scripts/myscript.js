@@ -173,16 +173,16 @@ class AvLong{
 	        	document.getElementById('outer_round_row').style.display = 'flex'
 	        	document.getElementById('inner_round_row').style.display = 'flex'
 	        	if(that.count_player  == 6){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：6人：梅林、派西维尔、忠臣*2 vs 莫甘娜、刺客 '
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：6人：梅林、派西维尔、忠臣*2 vs 莫甘娜、刺客，第四轮需要一张坏票'
 		        }
 		        else if(that.count_player  == 7){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：7人：梅林、派西维尔、忠臣*2 vs 莫甘娜、奥伯伦、刺客  '
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：7人：梅林、派西维尔、忠臣*2 vs 莫甘娜、奥伯伦、刺客，第四轮需要两张坏票'
 		        }
 		        else if(that.count_player  == 8){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：8人：梅林、派西维尔、忠臣*3 vs 莫甘娜、刺客、爪牙  '
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：8人：梅林、派西维尔、忠臣*3 vs 莫甘娜、刺客、爪牙，第四轮需要两张坏票'
 		        }
 		        else if(that.count_player  == 9){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：9人：梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客 '
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：9人：梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客，第四轮需要两张坏票'
 		        }
 	        	//set state to game started
 	        	that.state = 2
@@ -323,6 +323,10 @@ class AvLong{
         	if(that.state == 2){
         		document.getElementById("status_label").innerHTML = '坏人刺杀中'
         		if(that.player.role == "刺客"){
+        			document.getElementById("status_label").innerHTML = ', 选择卡牌刺杀'
+
+					document.getElementById("confirm_button").disabled = true
+					document.getElementById("confirm_button").style.display = "block"
         			that.state = 3
         		}
 	        }
@@ -343,7 +347,7 @@ class AvLong{
 	        	}
 	        	document.getElementById("result_wrapper").style.display = "block"
 	    		document.getElementById("kill_info").textContent = "刺杀失败"
-	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜"){
+	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜" || that.player.role == "坏人" || my_role == "奥伯伦" || that.player.role == "莫德雷德"){
 	    			document.getElementById("result_info").textContent = "胜败乃兵家常事，大侠请重新来过"
 	        	}
 	        	else{
@@ -372,7 +376,7 @@ class AvLong{
 	        	else{
 	        		document.getElementById("kill_info").textContent = ""
 	        	}
-	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜"){
+	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜" || that.player.role == "坏人" || my_role == "奥伯伦" || that.player.role == "莫德雷德"){
 	        		document.getElementById("result_info").textContent = "恭喜获得胜利"
 	        	}
 	        	else{
