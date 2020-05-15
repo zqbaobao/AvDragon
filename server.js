@@ -53,8 +53,8 @@ class Rules{
 
         this.success_needed = {
             6: [2,3,4,3,4],
-            7: [2,3,3,4,4],
-            8: [3,4,4,5,5],
+            7: [2,3,3,3,4],
+            8: [3,4,4,4,5],
             9: [3,4,4,4,5]
         }
 
@@ -278,7 +278,6 @@ class Game_Controller{
             }
             player.success = null
         }
-
 
         let win_flag = (count_success >= this.success_needed[this.outer_round])
         if(win_flag == true){
