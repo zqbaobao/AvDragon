@@ -391,8 +391,7 @@ io.on('connection', function(socket) {
         game_controller.signal_update_ready_info()
 
 
-        if(game_controller.players.length == count_sockets() && count_sockets() >= 6 && count_sockets() <= 9){
-
+        if((game_controller.players.length == count_sockets() && count_sockets() >= 6) || game_controller.players.length == 9){
             //init rules for this game
             game_controller.roles = rules.roles[game_controller.players.length]
             game_controller.success_needed = rules.success_needed[game_controller.players.length]
