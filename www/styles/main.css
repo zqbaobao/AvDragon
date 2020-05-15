@@ -1,9 +1,12 @@
 html, body {
     margin: 0;
-    background-color: #efefef;
+    background-color: black;
     font-family: "Courier New";
     font-weight: bold;
+    color: white;
+    overflow: scroll;
 }
+
 #login_wrapper {
     position: fixed;
     top: 0;
@@ -40,21 +43,21 @@ html, body {
 }
 #outer_round_row{
     display: none;
-    height: 1000px;
-    width: 1000px;
-    top: 700px;
-    left: 127px;
+    height: 100px;
+    width: 500px;
+    top: 50px;
+    left: 870px;
     border: none;
     text-align: center;
     margin-left: 30px;
-    position: fixed;
+    position: absolute;
 }
 .outer_round_box{
     height: 70px;
     width: 70px;
-    margin: 20px;
+    margin: 6px;
     border-radius: 50%;
-    border: thick solid orange;
+    border: thin solid orange;
     display: block;
     text-align: center;
     font-size: 60px;
@@ -65,19 +68,19 @@ html, body {
 #inner_round_row{
     display: none;
     height: 100px;
-    width: 1000px;
-    top: 800px;
-    left: 214px;
+    width: 500px;
+    top: 150px;
+    left: 940px;
     border: none;
     text-align: center;
     margin-left: 30px;
-    position: fixed;
+    position: absolute;
 }
 .inner_round_box{
     height: 36px;
     width: 36px;
-    border: thick solid Black;
-    margin: 20px;
+    border: thick solid black;
+    margin: 6px;
     border-radius: 50%;
     display: block;
 }
@@ -88,7 +91,7 @@ html, body {
     border: none;
     text-align: center;
     margin-left: 30px;
-    position: fixed;
+    position: absolute;
 }
 .id_label{
     font-size: 20px;
@@ -125,9 +128,10 @@ html, body {
 }
 .double_action{
     display: flex;
-    position: fixed;
-    top: 350px;
+    position: absolute;
+    top: 320px;
     left: 338px;
+    text-align: center;
 }
 #vote_buttons{
     display: none;
@@ -138,7 +142,7 @@ html, body {
     width: 100px;
     font-size: 20px;
     margin-left: 15px;
-    display: block;
+    display: inline-block;
 }
 #mission_buttons{
     display: none;
@@ -149,14 +153,14 @@ html, body {
     width: 100px;
     font-size: 20px;
     margin-left: 15px;
-    display: block;
+    display: inline-block;
+    text-align: center;
 }
 .single_action{
     display: none;
-    position: fixed;
-    top: 350px;
+    position: absolute;
+    top: 320px;
     left: 395px;
-    position: fixed;
     height: 60px;
     width: 100px;
     font-size: 20px;
@@ -164,26 +168,24 @@ html, body {
 }
 #status_label{
     display: block;
-    position: fixed;
-    top: 820px;
-    left: 80px;
-    position: fixed;
+    position: absolute;
+    top: 330px;
+    left: 1080px;
     height: 60px;
     width: 100px;
     font-size: 20px;
     margin-left: 15px;
-    text-align: center
+    text-align: left
 }
 
 #roles_label{
     display: block;
-    position: fixed;
-    top: 820px;
-    left: 600px;
-    position: fixed;
+    position: absolute;
+    top: 700px;
+    left: 980px;
     height: 60px;
-    width: 1000px;
+    width: 300px;
     font-size: 20px;
     margin-left: 15px;
-    text-align: center
+    text-align: left
 }

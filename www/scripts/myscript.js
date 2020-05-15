@@ -44,10 +44,9 @@ class AvLong{
 	constructor(){
 		var that = this;
 
-		// document.getElementById("player_list").innerHTML = that.generate_player_circle(6)
-		// that.set_player_avatar_positions(6)
-		// that.set_avatar_size()
-
+		// document.getElementById("player_list").innerHTML = that.generate_player_circle(9)
+		// that.set_player_avatar_positions(9)
+		// return
 		this.socket = io.connect()
 
 		//register button behaviors
@@ -298,7 +297,7 @@ class AvLong{
         			document.getElementById("speaking_done_button").style.display = "block";
         		}
         		document.getElementById("name_label_" + (leader - 1 + that.count_player) % that.count_player).innerHTML = that.player_names[(leader - 1 + that.count_player) % that.count_player] + ": 发言"
-        		document.getElementById("avatar_button_" + (leader - 1 + that.count_player) % that.count_player).style.outline = "thick solid green"
+        		document.getElementById("avatar_button_" + (leader - 1 + that.count_player) % that.count_player).style.outline = "thick solid yellow"
         		document.getElementById("status_label").innerHTML = '发言中'
     			// document.getElementById("mission_history").innerHTML += mission_info
     			// that.set_outer_round(outer_round)
@@ -312,7 +311,7 @@ class AvLong{
         		}
         		that.reset_avatar_name()
         		document.getElementById("name_label_" + id).innerHTML = that.player_names[id] + ": 发言"
-        		document.getElementById("avatar_button_" + id).style.outline = "thick solid green"
+        		document.getElementById("avatar_button_" + id).style.outline = "thick solid yellow"
         	}
         });
 
