@@ -8,48 +8,52 @@
         <link rel="stylesheet" href="styles/main.css">
 	</head>
 	<body>
-		<div id="status_log">
-			<p id="p_inner_round">第1轮选人</p>
-			<p id="p_outer_round">准备第1次任务</p>
+		<div id="outer_round_row">
+			<label class="outer_round_box" id="outer_round_0">4</label>
+			<label class="outer_round_box" id="outer_round_1"> </label>
+			<label class="outer_round_box" id="outer_round_2"></label>
+			<label class="outer_round_box" id="outer_round_3"></label>
+			<label class="outer_round_box" id="outer_round_4"></label>
 		</div>
-		<div style="display: flex">
-			<div id="player_list">
-				<!-- <div class="info_row">
-					<div><p>cccc</p></div>
-					<div><p>dsgsd</p></div>
-					<div><p>bfdbdf</p></div>
-					<div><p>dfbd</p></div>
-					<div><p>dfjrth</p></div>
-					<div><p>fbsv</p></div>
-					<div><p>vffdg</p></div>
-					<div><button>Pick</button></div>
-					<div><button>Kill</button></div>
-				</div>
-				<div class="info_row">
-					<div><p>cccc</p></div>
-					<div><p>dsgsd</p></div>
-					<div><p>bfdbdf</p></div>
-					<div><p>dfbd</p></div>
-					<div><p>dfjrth</p></div>
-					<div><p>fbsv</p></div>
-					<div><p>vffdg</p></div>
-					<div><button>Pick</button></div>
-					<div><button>Kill</button></div>
-				</div> -->
-			</div>
-			<div>
-				<p id="mission_history"></p>
-			</div>
+		<div id="inner_round_row">
+			<label class="inner_round_box" id="inner_round_0"></label>
+			<label class="inner_round_box" id="inner_round_1"></label>
+			<label class="inner_round_box" id="inner_round_2"></label>
+			<label class="inner_round_box" id="inner_round_3"></label>
+			<label class="inner_round_box" id="inner_round_4"></label>
 		</div>
-		<div id="vote_buttons">
-			<button id="agree_button">同意</button>
-			<button id="disagree_button">反对</button>
-		</div>
-		<div id="mission_buttons">
-			<button id="success_button">Success</button>
-			<button id="failure_button">Failure</button>
-		</div>
+
 		
+		<div id="player_list">
+			
+		</div>
+			
+		
+		<div class="double_action" id="vote_buttons">
+			<button id="disagree_button" style="background-color: red">反对</button>
+			<button id="agree_button">同意</button>
+		</div>
+
+		<div class="double_action" id="mission_buttons">
+			<button id="failure_button" style="background-color: red">Failure</button>
+			<button id="success_button">Success</button>
+		</div>
+
+		<div >
+			<button class="single_action" id="confirm_button" disabled>确认选择</button>
+		</div>
+
+		<div >
+			<button class="single_action" id="speaking_done_button">发言结束</button>
+		</div>
+
+		<div >
+			<label id="status_label"> </label>
+		</div>
+		<div >
+			<label id="roles_label"> </label>
+		</div>
+
 		<div id="login_wrapper">
             <p id="connection_info">connecting <br> to server...</p>
             <div id="nick_wrapper">
@@ -57,12 +61,14 @@
                 <input type="button" value="Ready" id="ready_button" />
             </div>
         </div>
+
 		<div id="result_wrapper">
             <p id="kill_info"></p>
             <p id="result_info"></p>
             <input type="button" value="Play Again" id="again_button" />
             </div>
         </div>
+
 		<script src="scripts/myscript.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 	</body>

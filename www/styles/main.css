@@ -1,7 +1,8 @@
 html, body {
     margin: 0;
     background-color: #efefef;
-    font-family: sans-serif;
+    font-family: "Courier New";
+    font-weight: bold;
 }
 #login_wrapper {
     position: fixed;
@@ -12,7 +13,7 @@ html, body {
     background-color: rgba(5, 5, 5, .6);
     text-align: center;
     color: #fff;
-    display: block;
+    display: none;
     padding-top: 280px;
 }
 #result_wrapper {
@@ -37,51 +38,102 @@ html, body {
 #ready_button{
     font-size: 20px;
 }
-#status_log{
-    text-align: center;
+#outer_round_row{
     display: none;
+    height: 1000px;
     width: 1000px;
+    top: 700px;
+    left: 127px;
+    border: none;
+    text-align: center;
+    margin-left: 30px;
+    position: fixed;
 }
-.info_row {
-    display: flex;
-    margin-bottom: 2px;
+.outer_round_box{
+    height: 70px;
+    width: 70px;
+    margin: 20px;
+    border-radius: 50%;
+    border: thick solid orange;
+    display: block;
+    text-align: center;
+    font-size: 60px;
+    font-family: 'Open Sans', sans-serif;
+    vertical-align: middle;
 }
+
+#inner_round_row{
+    display: none;
+    height: 100px;
+    width: 1000px;
+    top: 800px;
+    left: 214px;
+    border: none;
+    text-align: center;
+    margin-left: 30px;
+    position: fixed;
+}
+.inner_round_box{
+    height: 36px;
+    width: 36px;
+    border: thick solid Black;
+    margin: 20px;
+    border-radius: 50%;
+    display: block;
+}
+.player_frame{
+    display: block;
+    height: 170px;
+    width: 300px;
+    border: none;
+    text-align: center;
+    margin-left: 30px;
+    position: fixed;
+}
+.id_label{
+    font-size: 20px;
+    width: 300px;
+    font-family: "Courier New";
+}
+.avatar_button{
+    margin-top: 0px;
+    margin-bottom: 5px;
+    border: thick solid white;
+    outline: none;
+    height: 105px;
+    width: 90px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 15%;
+    background-image: url('../img/thumb.png');
+    
+    background-position: 50% 50%;
+    background-size: 100% 80%;
+    background-repeat: no-repeat;
+}
+.name_label{
+    font-size: 20px;
+    font-family: "Courier New";
+}
+
 #player_list {
     margin-top: 5px;
     margin-left: 50px;
 }
-div.info_row {
-    border: solid;
-    width: 900px;
-    margin-top: 15px;
-}
-div.info_row > div{
-    height: 60px;
-    width: 90px;
-    border: none;
-    text-align: center;
-    margin-left: 5px;
-    font-size: 16px;
-    display: block;
-}
-div.info_row > div > button{
-    height: 40px;
-    width: 70px;
-    font-size: 16px;
-    margin-top: 10px;
-    display: none;
-}
-div.info_row > div > p{
-    height: inherit;
-    width: inherit;
-    display: block;
+.double_action{
+    display: flex;
+    position: fixed;
+    top: 350px;
+    left: 338px;
 }
 #vote_buttons{
     display: none;
-    margin-left: 50px;
-    margin-top: 50px;
 }
 #vote_buttons > button{
+    background-color: green;
     height: 60px;
     width: 100px;
     font-size: 20px;
@@ -90,108 +142,48 @@ div.info_row > div > p{
 }
 #mission_buttons{
     display: none;
-    margin-left: 500px;
-    margin-top: 50px;
 }
 #mission_buttons > button{
+    background-color: green;
     height: 60px;
     width: 100px;
     font-size: 20px;
     margin-left: 15px;
     display: block;
 }
-#mission_history{
-    margin-left: 100px;
-    margin-top: 0px;
-    font-size: 16px;
-}
-
-/*
-.wrapper {
-    width: 500px;
-    height: 640px;
-    padding: 5px;
-    margin: 0 auto;
-    background-color: #ddd;
-}
-.banner {
-    height: 80px;
-    width: 100%;
-}
-.banner p {
-    float: left;
-    display: inline-block;
-}
-.controls {
-    display: flex;
-    position: relative;
-    font-size:20px;
-}
-#historyMsg {
-    height: 400px;
-    background-color: #fff;
-    overflow: auto;
-    padding: 2px;
-}
-#historyMsg img {
-    max-width: 99%;
-}
-.timespan {
-    color: #ddd;
-}
-.items {
-    height: 30px;
-}
-#colorStyle {
-    width: 50px;
-    border: none;
-    padding: 0;
-}
-/*custom the file input*/
-
-.imageLable {
-    position: relative;
-}
-#sendImage {
-    position: absolute;
-    width: 52px;
-    left: 0;
-    opacity: 0;
-    overflow: hidden;
-}
-/*end custom file input*/
-
-#messageInput {
-    width: 440px;
-    max-width: 440px;
-    height: 90px;
-    max-height: 90px;
-}
-#sendBtn {
-    width: 50px;
-    height: 96px;
-    float: right;
-}
-#emojiWrapper {
+.single_action{
     display: none;
-    width: 500px;
-    bottom: 105px;
-    position: absolute;
-    background-color: #aaa;
-    box-shadow: 0 0 10px #555;
+    position: fixed;
+    top: 350px;
+    left: 395px;
+    position: fixed;
+    height: 60px;
+    width: 100px;
+    font-size: 20px;
+    margin-left: 15px;
 }
-#emojiWrapper img {
-    margin: 2px;
-    padding: 2px;
-    width: 25px;
-    height: 25px;
+#status_label{
+    display: block;
+    position: fixed;
+    top: 820px;
+    left: 80px;
+    position: fixed;
+    height: 60px;
+    width: 100px;
+    font-size: 20px;
+    margin-left: 15px;
+    text-align: center
 }
-#emojiWrapper img:hover {
-    background-color: blue;
+
+#roles_label{
+    display: block;
+    position: fixed;
+    top: 820px;
+    left: 600px;
+    position: fixed;
+    height: 60px;
+    width: 1000px;
+    font-size: 20px;
+    margin-left: 15px;
+    text-align: center
 }
-.emoji{
-    display: inline;
-}
-footer {
-    text-align: center;
-}*/

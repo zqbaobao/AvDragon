@@ -4,7 +4,7 @@ var express = require('express'),
     io = require('socket.io').listen(server)
 app.use('/', express.static(__dirname + '/www'))
 const port = process.env.PORT || 3000
-server.listen(port)
+server.listen(80)
 
 var all_sockets = io.sockets.sockets
 function count_sockets(){
@@ -13,6 +13,60 @@ function count_sockets(){
 
 var socket2player = {}
 
+class Rules{
+    constructor(){
+        this.thumbs = {
+            6: {
+                "梅林": ["刺客", "莫甘娜"],
+                "派西": ["梅林", "莫甘娜"],
+                "莫甘娜": ["刺客"],
+                "刺客": ["莫甘娜"]
+            }, 
+            7: {
+                "梅林": ["刺客", "莫甘娜", "奥伯伦"],
+                "派西": ["梅林", "莫甘娜"],
+                "莫甘娜": ["刺客"],
+                "刺客": ["莫甘娜"]
+            }, 
+            8: {
+                "梅林": ["刺客", "莫甘娜", "坏人"],
+                "派西": ["梅林", "莫甘娜"],
+                "莫甘娜": ["刺客", "坏人"],
+                "刺客": ["莫甘娜", "坏人"],
+                "坏人": ["刺客", "莫甘娜"]
+            }, 
+            9: {
+                "梅林": ["刺客", "莫甘娜"],
+                "派西": ["梅林", "莫甘娜"],
+                "莫甘娜": ["刺客", "莫德雷德"],
+                "刺客": ["莫甘娜", "莫德雷德"],
+                "莫德雷德": ["刺客", "莫甘娜"]
+            }
+        }
+
+        this.roles = {
+            6: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民"],
+            7: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "奥伯伦"],
+            8: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "平民", "坏人"],
+            9: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "平民", "平民", "莫德雷德"]
+        }
+
+        this.success_needed = {
+            6: [2,3,4,3,4],
+            7: [2,3,3,4,4],
+            8: [3,4,4,5,5],
+            9: [3,4,4,4,5]
+        }
+
+        this.group_sizes = {
+            6: [2,3,4,3,4],
+            7: [2,3,3,4,4],
+            8: [3,4,4,5,5],
+            9: [3,4,4,5,5]
+        }
+    }
+}
+var rules = new Rules();
 // this is the Player class
 
 class Player{
@@ -31,39 +85,44 @@ class Player{
     }
 
     signal_game_start(){
-        let thumbs = ""
+        let thumbs = {}
         let names = game_controller.get_all_player_names()
 
-        //for test only, early return
-        // this.socket.emit("game_start", this.role, this.array_index, "1 2", names)
-        // return
-
         //real code
-        if(this.role == "梅林"){
-            let MoGanNa = game_controller.role2player["莫甘娜"]
-            let CiKe = game_controller.role2player["刺客"]
-            thumbs += MoGanNa.array_index + " " + CiKe.array_index
-            this.socket.emit("game_start", this.role, this.array_index, thumbs, names)
+        if(this.role != "平民" && this.role != "奥伯伦"){
+            for(let role of rules.thumbs[game_controller.players.length][this.role]){
+                let player = game_controller.role2player[role]
+                thumbs[player.array_index] = role
+            }
         }
-        else if(this.role == "派西"){
-            let MoGanNa = game_controller.role2player["莫甘娜"]
-            let MeiLin = game_controller.role2player["梅林"]
-            thumbs += MoGanNa.array_index + " " + MeiLin.array_index
-            this.socket.emit("game_start", this.role, this.array_index, thumbs, names)
-        }
-        else if(this.role == "莫甘娜"){
-            let CiKe = game_controller.role2player["刺客"]
-            thumbs += CiKe.array_index
-            this.socket.emit("game_start", this.role, this.array_index, thumbs, names)
-        }
-        else if(this.role == "刺客"){
-            let MoGanNa = game_controller.role2player["莫甘娜"]
-            thumbs += MoGanNa.array_index
-            this.socket.emit("game_start", this.role, this.array_index, thumbs, names)
-        }
-        else{
-            this.socket.emit("game_start", this.role, this.array_index, thumbs, names)
-        }
+        this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+
+        // old hardcoded rule for 6 players
+        // if(this.role == "梅林"){
+        //     let MoGanNa = game_controller.role2player["莫甘娜"]
+        //     let CiKe = game_controller.role2player["刺客"]
+        //     thumbs += MoGanNa.array_index + " " + CiKe.array_index
+        //     this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+        // }
+        // else if(this.role == "派西"){
+        //     let MoGanNa = game_controller.role2player["莫甘娜"]
+        //     let MeiLin = game_controller.role2player["梅林"]
+        //     thumbs += MoGanNa.array_index + " " + MeiLin.array_index
+        //     this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+        // }
+        // else if(this.role == "莫甘娜"){
+        //     let CiKe = game_controller.role2player["刺客"]
+        //     thumbs += CiKe.array_index
+        //     this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+        // }
+        // else if(this.role == "刺客"){
+        //     let MoGanNa = game_controller.role2player["莫甘娜"]
+        //     thumbs += MoGanNa.array_index
+        //     this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+        // }
+        // else{
+        //     this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+        // }
     }
 }
 
@@ -74,9 +133,9 @@ class Game_Controller{
 
     init(){
         //setting info
-        this.success_needed = [2,3,3,3,4]
-        this.group_sizes = [2,3,3,4,4]
-        this.roles = ["梅林", "派西", "平民", "平民", "莫甘娜", "刺客"]
+        this.success_needed = []
+        this.group_sizes = []
+        this.roles = []
         if(this.players != null){
             for(let player of this.players){
                 player.init()
@@ -165,13 +224,13 @@ class Game_Controller{
         io.sockets.emit("group_info", group)
     }
 
-    signal_mission_start(){
+    signal_mission_start(forced){
         
-        let group_ids = []
+        let group = []
         for(let player of this.mission_group){
-            group_ids.push(player.array_index)
+            group.push(player.array_index)
         }
-        io.sockets.emit("mission_start", group_ids)
+        io.sockets.emit("mission_start", group, forced)
     }
 
     signal_update_ready_info(){
@@ -181,11 +240,10 @@ class Game_Controller{
     handle_vote_result(){
         this.count_voted = 0
         let count_agree = 0
-        let vote_result = ""
+        let vote_result = []
         this.players.forEach(
-            (player)=>{vote_result += player.agree + " "}
+            (player)=>{vote_result.push(player.agree)}
         )
-        io.sockets.emit("vote_result", vote_result.trim())
 
         for(let player of this.players){
             if(player.agree == true){
@@ -195,9 +253,14 @@ class Game_Controller{
         }
         
         if(count_agree > this.players.length / 2){
-            this.signal_mission_start()
+
+            io.sockets.emit("vote_result", true, this.inner_round, vote_result)
+            this.signal_mission_start(false)
         }
         else{
+
+            io.sockets.emit("vote_result", false, this.inner_round, vote_result)
+
             this.inner_round++
             this.mission_group = []
             
@@ -224,22 +287,22 @@ class Game_Controller{
 
         let mission_info = ""
         if(win_flag == true){
-            mission_info += "任务成功！<br>";
+            mission_info += "任务成功！\n";
         }
         else{
-            mission_info += "任务失败！<br>";
+            mission_info += "任务失败！\n";
         }
         
         mission_info += "Success : " + count_success + "    ";
-        mission_info += "Failure : " + (this.mission_group.length - count_success) + "<br>";
-        mission_info += "队长 : " + this.players[(this.leader + this.players.length - 1) % this.players.length].name + "<br>"
+        mission_info += "Failure : " + (this.mission_group.length - count_success) + "\n";
+        mission_info += "队长 : " + this.players[(this.leader + this.players.length - 1) % this.players.length].name + "\n"
         mission_info += "队员 : "
         this.mission_group.forEach(
             (player)=>{mission_info += player.name + " "}
         )
-        mission_info += "<br><br>"
+        mission_info += "\n"
 
-        io.sockets.emit("mission_result", mission_info, this.outer_round + 1)
+        io.sockets.emit("mission_result", win_flag, this.outer_round, mission_info, (this.leader + this.players.length - 1) % this.players.length)
 
         if(this.count_wins == 3){
             
@@ -256,8 +319,6 @@ class Game_Controller{
         this.mission_group = []
         this.inner_round = 0
         this.outer_round++
-
-        this.signal_pick_group()
     }
 
     handle_lost(){
@@ -276,19 +337,15 @@ class Game_Controller{
     }
 
     get_all_player_names(){
-        let info = ""
+        let group = []
         this.players.forEach(
-            (player)=>{info += player.name + " "}
+            (player)=>{group.push(player.name)}
         )
-        return info.trim()
+        return group
     }
 
     get_all_roles(){
-        let info = ""
-        this.roles.forEach(
-            (role)=>{info += role + " "}
-        )
-        return info.trim()
+        return this.roles
     }
 
 }
@@ -335,7 +392,12 @@ io.on('connection', function(socket) {
         game_controller.signal_update_ready_info()
 
     
-        if(game_controller.players.length == 6 && count_sockets() == 6){
+        if(game_controller.players.length == count_sockets() && count_sockets() >= 6 && count_sockets() <= 9){
+
+            //init rules for this game
+            game_controller.roles = rules.roles[game_controller.players.length]
+            game_controller.success_needed = rules.success_needed[game_controller.players.length]
+            game_controller.group_sizes = rules.group_sizes[game_controller.players.length]
 
             game_controller.shuffle_roles()
             game_controller.assign_roles()
@@ -358,7 +420,6 @@ io.on('connection', function(socket) {
 
         game_controller.count_started++
         if(game_controller.count_started == game_controller.players.length){
-  
             game_controller.signal_pick_group()
         }
     })
@@ -369,16 +430,13 @@ io.on('connection', function(socket) {
             return
         }
 
-        let id_array = group.split(" ")
-        for(let i of id_array){
-            i = parseInt(i)
+        for(let i of group){
             game_controller.mission_group.push(game_controller.players[i])
 
         }
 
         if(game_controller.inner_round == 4){
-            game_controller.signal_mission_start()
-            game_controller.signal_group_info(group)
+            game_controller.signal_mission_start(true)
         }
         else{
             game_controller.signal_vote(group)
@@ -392,6 +450,7 @@ io.on('connection', function(socket) {
             return
         }
 
+        io.sockets.emit("someone_voted", player.array_index)
         if(vote == "agree"){
             player.agree = true
         }
@@ -417,10 +476,26 @@ io.on('connection', function(socket) {
         else{
             player.success = false;
         }
+
+        io.sockets.emit("someone_missioned", player.array_index)
         game_controller.count_missioned++
         if(game_controller.count_missioned == game_controller.mission_group.length){
 
                 game_controller.handle_mission_result()
+        }
+    })
+
+    socket.on('speaking_done', function(id) {
+
+        if(game_controller.game_stage != 1){
+            return
+        }
+
+        if(id == (game_controller.leader + game_controller.players.length - 1) % game_controller.players.length){
+            game_controller.signal_pick_group()
+        }
+        else{
+            io.sockets.emit("speaking_start", (id - 1 + game_controller.players.length) % game_controller.players.length)
         }
     })
 
@@ -430,7 +505,7 @@ io.on('connection', function(socket) {
             return
         }
 
-        if(game_controller.players[parseInt(id)].role == "梅林"){
+        if(game_controller.players[id].role == "梅林"){
             game_controller.handle_lost()
         }
         else{
