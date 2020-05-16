@@ -491,7 +491,7 @@ class AvLong{
 
 	set_player_avatar_positions(num){
 		for(let i = 0; i < num; i++){
-			let xy = tool.calc_pos_in_circule(170, i, num, 280, 280)
+			let xy = tool.calc_pos_in_circule(170, i, num, 280, 310)
 			document.getElementById("player_frame_" + i).style.left = xy[0]
 			document.getElementById("player_frame_" + i).style.top = xy[1]
 		}

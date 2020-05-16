@@ -166,7 +166,7 @@ html, body {
 .double_action{
     display: flex;
     position: absolute;
-    top: 320px;
+    top: 350px;
     left: 338px;
     text-align: center;
 }
@@ -196,7 +196,7 @@ html, body {
 .single_action{
     display: none;
     position: absolute;
-    top: 320px;
+    top: 350px;
     left: 395px;
     height: 60px;
     width: 100px;
