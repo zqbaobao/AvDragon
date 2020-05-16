@@ -53,15 +53,24 @@ class AvLong{
 		document.getElementById('ready_button').addEventListener('click', function() {
 			if(that.state == 0){
 				let nick_name = document.getElementById('nickname_input').value;
+				let room_name = document.getElementById('room_input').value;
 
-				if (nick_name.trim().length != 0) {
+				if (nick_name.trim().length != 0 && room_name.trim().length != 0) {
 					that.player.name = nick_name
-					document.getElementById('nickname_input').placeholder = nick_name
+					document.getElementById('nickname_input').placeholder = nick_name.trim()
+					document.getElementById('room_input').placeholder = room_name.trim()
 					that.state = 1
-					that.socket.emit('ready_request', nick_name);
+					that.socket.emit('ready_request', nick_name.trim(), room_name.trim());
 			    } else {
 			        document.getElementById('nickname_input').focus();
 			    };
+			}
+		}, false)
+
+		document.getElementById('start_button').addEventListener('click', function() {
+			if(that.state == 1){
+				console.log("clicked start")
+				that.socket.emit('start_request')
 			}
 		}, false)
 
@@ -118,14 +127,18 @@ class AvLong{
 
         this.socket.on('update_ready_info', function(count_connected, count_ready) {
         	if(that.state == 1){
-	        	let info = "Welcome " + that.player.name + "<br>Connected: " + count_connected + "<br>Ready: " + count_ready + "<br>Game will start automatically when everyone is ready"
+	        	let info = "Welcome " + that.player.name + "<br>Connected: " + count_connected + "<br>Ready: " + count_ready + "<br>Click Start to start the game with 6, 7, 8 or 9 players"
 	        	document.getElementById('connection_info').innerHTML = info;
 	        	document.getElementById('nick_wrapper').style.display = 'none';
+	        	document.getElementById('start_button_wrapper').style.display = 'inline-block';
 	        }
         });
 
         this.socket.on('game_start', function(my_role, my_id, my_thumbs, names, group_sizes) {
         	if(that.state == 1){
+	        	//hide login wrapper
+	        	document.getElementById('login_wrapper').style.display = 'none'
+
         		document.getElementById("status_label").innerHTML = '游戏开始'
         		document.getElementById("status_label").style.display = 'block'
 	        	//generate the layout
@@ -166,8 +179,6 @@ class AvLong{
 	        	for(let i = 0; i < 5; i++){
 	        		document.getElementById("outer_round_" + i).innerHTML = group_sizes[i]
 	        	}
-	        	//hide login wrapper
-	        	document.getElementById('login_wrapper').style.display = 'none'
 
 	        	//show round rows
 	        	document.getElementById('outer_round_row').style.display = 'flex'
@@ -449,13 +460,14 @@ class AvLong{
 		document.getElementById("status_label").innerHTML = ''
 		document.getElementById("roles_label").innerHTML = ''
 
-		document.getElementById('connection_info').textContent = 'Get yourself a nickname';
+		document.getElementById('connection_info').textContent = 'Get yourself a nick name and the room id';
         document.getElementById('nick_wrapper').style.display = 'block';
         document.getElementById('nickname_input').focus();
+        document.getElementById('start_button_wrapper').style.display = 'none';
 
     	document.getElementById('login_wrapper').style.display = 'block'
 
-    	this.socket.emit('connect_request');
+    	// this.socket.emit('connect_request');
 	}
 
 	generate_player_circle(num){

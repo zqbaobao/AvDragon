@@ -34,19 +34,42 @@ html, body {
 }
 #nick_wrapper {
     display: none;
+    text-align: center;
+}
+#start_button_wrapper {
+    display: none;
 }
 #nickname_input{
     font-size: 20px;
 }
-#ready_button{
+#room_input{
     font-size: 20px;
+}
+#ready_button{
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+#wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    display: inline-block;
+}
+#content_wrapper{
+    position: absolute;
+    left: 50px;
+    top: 50px;
 }
 #outer_round_row{
     display: none;
     height: 100px;
     width: 500px;
-    top: 50px;
-    left: 870px;
+    top: 100px;
+    left: 920px;
     border: none;
     text-align: center;
     margin-left: 30px;
@@ -69,8 +92,8 @@ html, body {
     display: none;
     height: 100px;
     width: 500px;
-    top: 150px;
-    left: 940px;
+    top: 200px;
+    left: 990px;
     border: none;
     text-align: center;
     margin-left: 30px;
@@ -169,8 +192,8 @@ html, body {
 #status_label{
     display: block;
     position: absolute;
-    top: 330px;
-    left: 1080px;
+    top: 360px;
+    left: 1130px;
     height: 60px;
     width: 100px;
     font-size: 20px;
@@ -181,8 +204,8 @@ html, body {
 #roles_label{
     display: block;
     position: absolute;
-    top: 450px;
-    left: 980px;
+    top: 560px;
+    left: 1030px;
     height: 60px;
     width: 300px;
     font-size: 20px;

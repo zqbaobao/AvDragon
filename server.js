@@ -7,8 +7,14 @@ const port = process.env.PORT || 3000
 server.listen(port)
 
 var all_sockets = io.sockets.sockets
-function count_sockets(){
-    return Object.keys(io.sockets.sockets).length
+function count_sockets(room_name){
+    let room = io.sockets.adapter.rooms[room_name];
+    if(room === undefined){
+        return 0
+    }
+    else{
+        return room.length;
+    }
 }
 
 var socket2player = {}
@@ -66,7 +72,7 @@ class Rules{
         }
     }
 }
-var rules = new Rules();
+// var rules = new Rules();
 // this is the Player class
 
 class Player{
@@ -82,20 +88,21 @@ class Player{
         this.array_index = -1
         this.agree = null
         this.success = null
+        this.room_name = ""
     }
 
     signal_game_start(){
         let thumbs = {}
-        let names = game_controller.get_all_player_names()
-
+        let names = rooms[this.room_name].get_all_player_names()
+        let game_controller = rooms[this.room_name]
         //real code
         if(this.role != "平民" && this.role != "奥伯伦"){
-            for(let role of rules.thumbs[game_controller.players.length][this.role]){
-                let player = game_controller.role2player[role]
+            for(let role of game_controller.rules.thumbs[game_controller.players.length][this.role]){
+                let player = rooms[this.room_name].role2player[role]
                 thumbs[player.array_index] = role
             }
         }
-        this.socket.emit("game_start", this.role, this.array_index, thumbs, names, game_controller.group_sizes)
+        this.socket.emit("game_start", this.role, this.array_index, thumbs, names, rooms[this.room_name].group_sizes)
 
         // old hardcoded rule for 6 players
         // if(this.role == "梅林"){
@@ -127,8 +134,10 @@ class Player{
 }
 
 class Game_Controller{
-    constructor(){
+    constructor(room_name){
         this.init()
+        this.rules = new Rules()
+        this.room_name = room_name
     }
 
     init(){
@@ -204,7 +213,7 @@ class Game_Controller{
     signal_game_start(){
         this.game_stage = 1;
         //elect a leader first
-        this.leader = Math.floor(Math.random() * game_controller.players.length)
+        this.leader = Math.floor(Math.random() * this.players.length)
 
         for(const player of this.players){
             player.signal_game_start()
@@ -212,16 +221,16 @@ class Game_Controller{
     }
 
     signal_pick_group(){
-        io.sockets.emit("pick_group", this.leader, this.group_sizes[this.outer_round], this.inner_round)
+        io.to(this.room_name).emit("pick_group", this.leader, this.group_sizes[this.outer_round], this.inner_round)
         this.leader = (this.leader + 1) % this.players.length
     }
 
     signal_vote(group){
-        io.sockets.emit("vote", group)
+        io.to(this.room_name).emit("vote", group)
     }
 
     signal_group_info(group){
-        io.sockets.emit("group_info", group)
+        io.to(this.room_name).emit("group_info", group)
     }
 
     signal_mission_start(forced){
@@ -230,11 +239,11 @@ class Game_Controller{
         for(let player of this.mission_group){
             group.push(player.array_index)
         }
-        io.sockets.emit("mission_start", group, forced)
+        io.to(this.room_name).emit("mission_start", group, forced)
     }
 
     signal_update_ready_info(){
-        io.sockets.emit('update_ready_info', count_sockets(), this.players.length)
+        io.to(this.room_name).emit('update_ready_info', count_sockets(this.room_name), this.players.length)
     }
 
     handle_vote_result(){
@@ -254,12 +263,12 @@ class Game_Controller{
 
         if(count_agree > this.players.length / 2){
 
-            io.sockets.emit("vote_result", true, this.inner_round, vote_result)
+            io.to(this.room_name).emit("vote_result", true, this.inner_round, vote_result)
             this.signal_mission_start(false)
         }
         else{
 
-            io.sockets.emit("vote_result", false, this.inner_round, vote_result)
+            io.to(this.room_name).emit("vote_result", false, this.inner_round, vote_result)
 
             this.inner_round++
             this.mission_group = []
@@ -301,16 +310,16 @@ class Game_Controller{
         )
         mission_info += "\n"
 
-        io.sockets.emit("mission_result", win_flag, this.outer_round, mission_info, (this.leader + this.players.length - 1) % this.players.length)
+        io.to(this.room_name).emit("mission_result", win_flag, this.outer_round, mission_info, (this.leader + this.players.length - 1) % this.players.length)
 
         if(this.count_wins == 3){
 
-            io.sockets.emit("kill_start")
+            io.to(this.room_name).emit("kill_start")
             return
         }
         if(this.outer_round + 1 - this.count_wins == 3){
 
-            io.sockets.emit("lost", this.roles, false)
+            io.to(this.room_name).emit("lost", this.roles, false)
             this.init()
             return
         }
@@ -321,17 +330,17 @@ class Game_Controller{
     }
 
     handle_lost(){
-        io.sockets.emit("lost", this.roles, true)
+        io.to(this.room_name).emit("lost", this.roles, true)
         this.init()
     }
 
     handle_win(){
-        io.sockets.emit("win", this.roles)
+        io.to(this.room_name).emit("win", this.roles)
         this.init()
     }
 
     handle_draw(name){
-        io.sockets.emit("draw", this.roles, name)
+        io.to(this.room_name).emit("draw", this.roles, name)
         this.init()
     }
 
@@ -350,8 +359,9 @@ class Game_Controller{
 }
 
 
+var rooms = {}
 
-var game_controller = new Game_Controller()
+// var game_controller = new Game_Controller()
 
 
 io.on('connection', function(socket) {
@@ -361,41 +371,59 @@ io.on('connection', function(socket) {
     socket2player[socket.id] = player //currently useless
 
 	//register callbacks
-    socket.on('connect_request', function() {
-        console.log("new connection request")
-        // for(let skt of Object.keys(all_sockets)){
-        //     console.log(skt)
-        // }
-        if(game_controller.game_stage == 0){
-            console.log("connected = " + count_sockets())
-            game_controller.signal_update_ready_info()
-        }
-        else{
-            console.log("connected while game started, connected = " + count_sockets())
-            socket.emit("please_wait")
-        }
-        console.log(" ")
-    })
 
-    socket.on('ready_request', function(name) {
+    // now we use rooms, this becomes useless
+    // socket.on('connect_request', function() {
+    //     console.log("new connection request")
+    //     // for(let skt of Object.keys(all_sockets)){
+    //     //     console.log(skt)
+    //     // }
+    //     if(game_controller.game_stage == 0){
+    //         console.log("connected = " + count_sockets())
+    //         game_controller.signal_update_ready_info()
+    //     }
+    //     else{
+    //         console.log("connected while game started, connected = " + count_sockets())
+    //         socket.emit("please_wait")
+    //     }
+    //     console.log(" ")
+    // })
+
+    socket.on('ready_request', function(name, room_name) {
+
+        if(!(room_name in rooms)){
+            rooms[room_name] = new Game_Controller(room_name)
+        }
+        let game_controller = rooms[room_name]
+        
 
         if(game_controller.game_stage != 0){
+            console.log("ready while game started, connected = " + count_sockets(room_name))
+            socket.emit("please_wait")
             return
         }
+        socket.join(room_name)
         console.log("player " + name + " is now ready")
         player.name = name
+        player.room_name = room_name
 
         game_controller.add_player(player)
         console.log("ready players: " + game_controller.get_all_player_names())
 
         game_controller.signal_update_ready_info()
 
+    })
 
-        if((game_controller.players.length == count_sockets() && count_sockets() >= 6) || game_controller.players.length == 9){
+    socket.on('start_request', function(){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 0){
+            return
+        }
+        if(game_controller.players.length >= 6 && game_controller.players.length <= 9){
             //init rules for this game
-            game_controller.roles = rules.roles[game_controller.players.length]
-            game_controller.success_needed = rules.success_needed[game_controller.players.length]
-            game_controller.group_sizes = rules.group_sizes[game_controller.players.length]
+            game_controller.roles = game_controller.rules.roles[game_controller.players.length]
+            game_controller.success_needed = game_controller.rules.success_needed[game_controller.players.length]
+            game_controller.group_sizes = game_controller.rules.group_sizes[game_controller.players.length]
 
             game_controller.shuffle_roles()
             game_controller.assign_roles()
@@ -412,7 +440,8 @@ io.on('connection', function(socket) {
 
     socket.on('started', function() {
 
-        if(game_controller.game_stage != 1){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
             return
         }
 
@@ -424,7 +453,8 @@ io.on('connection', function(socket) {
 
     socket.on('group_picked', function(group) {
 
-        if(game_controller.game_stage != 1){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
             return
         }
 
@@ -444,11 +474,12 @@ io.on('connection', function(socket) {
 
     socket.on('vote_done', function(vote) {
 
-        if(game_controller.game_stage != 1){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
             return
         }
 
-        io.sockets.emit("someone_voted", player.array_index)
+        io.to(player.room_name).emit("someone_voted", player.array_index)
         if(vote == "agree"){
             player.agree = true
         }
@@ -464,7 +495,8 @@ io.on('connection', function(socket) {
 
     socket.on('mission_done', function(mission) {
 
-        if(game_controller.game_stage != 1){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
             return
         }
 
@@ -475,7 +507,7 @@ io.on('connection', function(socket) {
             player.success = false;
         }
 
-        io.sockets.emit("someone_missioned", player.array_index)
+        io.to(player.room_name).emit("someone_missioned", player.array_index)
         game_controller.count_missioned++
         if(game_controller.count_missioned == game_controller.mission_group.length){
 
@@ -485,7 +517,8 @@ io.on('connection', function(socket) {
 
     socket.on('speaking_done', function(id) {
 
-        if(game_controller.game_stage != 1){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
             return
         }
 
@@ -493,13 +526,14 @@ io.on('connection', function(socket) {
             game_controller.signal_pick_group()
         }
         else{
-            io.sockets.emit("speaking_start", (id - 1 + game_controller.players.length) % game_controller.players.length)
+            io.to(player.room_name).emit("speaking_start", (id - 1 + game_controller.players.length) % game_controller.players.length)
         }
     })
 
     socket.on('kill_done', function(id) {
 
-        if(game_controller.game_stage != 1){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
             return
         }
 
@@ -512,8 +546,14 @@ io.on('connection', function(socket) {
     })
 
     socket.on('disconnect', function() {
+
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == ""){
+            return
+        }
+
         console.log("disconnect")
-        console.log("connected = " + count_sockets())
+        // console.log("connected = " + count_sockets(player.room_name))
 
         if(game_controller.game_stage == 0){
 
@@ -534,9 +574,9 @@ io.on('connection', function(socket) {
                 console.log("someone left.")
             }
         }
-        if(count_sockets() == 0){
-            game_controller.init() //hack for fixing ghost players for now
-        }
+        // if(count_sockets(player.room_name) == 0){
+        //     game_controller.init() //hack for fixing ghost players for now
+        // }
     })
 
 })
