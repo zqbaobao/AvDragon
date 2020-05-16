@@ -207,21 +207,21 @@ html, body {
     display: block;
     position: absolute;
     top: 360px;
-    left: 1130px;
+    left: 1000px;
     height: 60px;
-    width: 100px;
+    width: 300px;
     font-size: 20px;
     margin-left: 15px;
-    text-align: left
+    text-align: center;
 }
 
 #roles_label{
     display: block;
     position: absolute;
     top: 520px;
-    left: 1030px;
+    left: 1000px;
     height: 60px;
-    width: 300px;
+    width: 320px;
     font-size: 20px;
     margin-left: 15px;
     text-align: left

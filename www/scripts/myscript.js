@@ -208,7 +208,7 @@ class AvLong{
 
         this.socket.on('pick_group', function(leader, group_size, inner_round) {
         	if(that.state == 2){
-        		document.getElementById("status_label").innerHTML = '组队中'
+        		document.getElementById("status_label").innerHTML = '组队中, 队长: ' + that.player_names[leader]
         		if(inner_round == 0){
         			//clear the old color of last outer round for all inner round boxes
         			that.clear_inner_round_boxes()
@@ -251,16 +251,23 @@ class AvLong{
         	if(that.state == 2){
 
         		let info = ""
+        		let count_agree = 0
+        		let count_disagree = 0
 	        	for(let i = 0; i < that.count_player; i++){
 	        		if(vote_result[i] == true){
 	        			document.getElementById("name_label_" + i).innerHTML = that.player_names[i] + ": 同意"
 	        			info += that.player_names[i] + ": 同意\n"
+	        			count_agree ++;
 	        		}
 	        		else{
 	        			document.getElementById("name_label_" + i).innerHTML = that.player_names[i] + ": 反对"
 	        			info += that.player_names[i] + ": 反对\n"
+	        			count_disagree ++;
 	        		}
 	        	}
+	        	info += "\n"
+	        	info += "同意: " + count_agree + "\n"
+	        	info += "反对: " + count_disagree + "\n"
 	        	document.getElementById("inner_round_" + inner_round).title = info
 	        	if(passed){
 	        		document.getElementById("inner_round_" + inner_round).style.backgroundColor = "green"
@@ -314,7 +321,7 @@ class AvLong{
         		}
         		document.getElementById("name_label_" + (leader - 1 + that.count_player) % that.count_player).innerHTML = that.player_names[(leader - 1 + that.count_player) % that.count_player] + ": 发言"
         		document.getElementById("avatar_button_" + (leader - 1 + that.count_player) % that.count_player).style.outline = "thick solid yellow"
-        		document.getElementById("status_label").innerHTML = '发言中'
+        		document.getElementById("status_label").innerHTML = '发言中, 发言玩家: ' + that.player_names[(leader - 1 + that.count_player) % that.count_player]
     			// document.getElementById("mission_history").innerHTML += mission_info
     			// that.set_outer_round(outer_round)
 	        }
@@ -328,6 +335,8 @@ class AvLong{
         		that.reset_avatar_name()
         		document.getElementById("name_label_" + id).innerHTML = that.player_names[id] + ": 发言"
         		document.getElementById("avatar_button_" + id).style.outline = "thick solid yellow"
+
+        		document.getElementById("status_label").innerHTML = '发言中, 发言玩家: ' + that.player_names[id]
         	}
         });
 
