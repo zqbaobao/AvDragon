@@ -80,6 +80,7 @@ class Player{
         console.log("created new player")
         this.socket = socket
         this.init()
+        this.room_name = ""
     }
 
     init(){
@@ -88,6 +89,10 @@ class Player{
         this.array_index = -1
         this.agree = null
         this.success = null
+
+        if(this.room_name != ""){
+            this.socket.leave(this.room_name)
+        }
         this.room_name = ""
     }
 
@@ -243,7 +248,7 @@ class Game_Controller{
     }
 
     signal_update_ready_info(){
-        io.to(this.room_name).emit('update_ready_info', count_sockets(this.room_name), this.players.length)
+        io.to(this.room_name).emit('update_ready_info', count_sockets(this.room_name), this.players.length, this.get_all_player_names(), this.room_name)
     }
 
     handle_vote_result(){
@@ -402,10 +407,10 @@ io.on('connection', function(socket) {
             socket.emit("please_wait")
             return
         }
-        socket.join(room_name)
-        console.log("player " + name + " is now ready")
+        console.log("player " + name + " is now in room " + room_name )
         player.name = name
         player.room_name = room_name
+        socket.join(room_name)
 
         game_controller.add_player(player)
         console.log("ready players: " + game_controller.get_all_player_names())

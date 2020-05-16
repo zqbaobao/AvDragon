@@ -52,6 +52,7 @@ class AvLong{
 		//register button behaviors
 		document.getElementById('ready_button').addEventListener('click', function() {
 			if(that.state == 0){
+				console.log("clicked ready")
 				let nick_name = document.getElementById('nickname_input').value;
 				let room_name = document.getElementById('room_input').value;
 
@@ -60,6 +61,8 @@ class AvLong{
 					document.getElementById('nickname_input').placeholder = nick_name.trim()
 					document.getElementById('room_input').placeholder = room_name.trim()
 					that.state = 1
+					console.log(nick_name.trim())
+					console.log(room_name.trim())
 					that.socket.emit('ready_request', nick_name.trim(), room_name.trim());
 			    } else {
 			        document.getElementById('nickname_input').focus();
@@ -125,9 +128,9 @@ class AvLong{
 			
         });
 
-        this.socket.on('update_ready_info', function(count_connected, count_ready) {
+        this.socket.on('update_ready_info', function(count_connected, count_ready, names, room_name) {
         	if(that.state == 1){
-	        	let info = "Welcome " + that.player.name + "<br>Connected: " + count_connected + "<br>Ready: " + count_ready + "<br>Click Start to start the game with 6, 7, 8 or 9 players"
+	        	let info = "Welcome " + that.player.name + "<br><br>Room ID: " + room_name + "<br>Connected: " + count_connected + "<br>Ready: " + count_ready + "<br>Players: " + names + "<br><br>Click Start to start the game with 6, 7, 8 or 9 players"
 	        	document.getElementById('connection_info').innerHTML = info;
 	        	document.getElementById('nick_wrapper').style.display = 'none';
 	        	document.getElementById('start_button_wrapper').style.display = 'inline-block';
@@ -184,17 +187,19 @@ class AvLong{
 	        	document.getElementById('outer_round_row').style.display = 'flex'
 	        	document.getElementById('inner_round_row').style.display = 'flex'
 	        	if(that.count_player  == 6){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：6人：梅林、派西维尔、忠臣*2 vs 莫甘娜、刺客，第四轮需要一张坏票'
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：6人，梅林、派西维尔、忠臣*2 vs 莫甘娜、刺客，第四轮只需一张坏票'
 		        }
 		        else if(that.count_player  == 7){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：7人：梅林、派西维尔、忠臣*2 vs 莫甘娜、奥伯伦、刺客，第四轮需要两张坏票'
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：7人，梅林、派西维尔、忠臣*2 vs 莫甘娜、奥伯伦、刺客，第四轮需要两张坏票'
 		        }
 		        else if(that.count_player  == 8){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：8人：梅林、派西维尔、忠臣*3 vs 莫甘娜、刺客、爪牙，第四轮需要两张坏票'
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：8人，梅林、派西维尔、忠臣*3 vs 莫甘娜、刺客、爪牙，第四轮需要两张坏票'
 		        }
 		        else if(that.count_player  == 9){
-		        	document.getElementById('roles_label').innerHTML = '游戏配置：9人：梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客，第四轮需要两张坏票'
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：9人，梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客，第四轮需要两张坏票'
 		        }
+
+	        	document.getElementById('roles_label').innerHTML += '<br><br>其他说明：1）鼠标移动至圆圈上方，将显示此轮任务或投票信息 2）点击玩家卡牌以选人'
 	        	//set state to game started
 	        	that.state = 2
 	        	that.socket.emit("started")
@@ -460,7 +465,7 @@ class AvLong{
 		document.getElementById("status_label").innerHTML = ''
 		document.getElementById("roles_label").innerHTML = ''
 
-		document.getElementById('connection_info').textContent = 'Get yourself a nick name and the room id';
+		document.getElementById('connection_info').textContent = 'Get yourself a nick name and enter the room id';
         document.getElementById('nick_wrapper').style.display = 'block';
         document.getElementById('nickname_input').focus();
         document.getElementById('start_button_wrapper').style.display = 'none';
