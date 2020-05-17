@@ -130,7 +130,7 @@ class AvLong{
 
         this.socket.on('update_ready_info', function(count_connected, count_ready, names, room_name) {
         	if(that.state == 1){
-	        	let info = "Welcome " + that.player.name + "<br><br>Room ID: " + room_name + "<br>Connected: " + count_connected + "<br>Ready: " + count_ready + "<br>Players: " + names + "<br><br>Click Start to start the game with 6, 7, 8 or 9 players"
+	        	let info = "Welcome " + that.player.name + "<br><br>Room ID: " + room_name + "<br>Connected: " + count_connected + "<br>Ready: " + count_ready + "<br>Players: " + names + "<br><br>Click Start to start the game with 6, 7, 8, 9 or 10 players"
 	        	document.getElementById('connection_info').innerHTML = info;
 	        	document.getElementById('nick_wrapper').style.display = 'none';
 	        	document.getElementById('start_button_wrapper').style.display = 'inline-block';
