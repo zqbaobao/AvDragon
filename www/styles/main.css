@@ -64,15 +64,6 @@ html, body {
     font-size: 20px;
 }
 
-#wrapper {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    text-align: center;
-    display: inline-block;
-}
 #content_wrapper{
     position: absolute;
     left: 50px;

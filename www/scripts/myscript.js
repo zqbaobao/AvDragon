@@ -207,7 +207,7 @@ class AvLong{
 		        	document.getElementById('roles_label').innerHTML = '游戏配置：10人，梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客、奥伯伦，第四轮需要两张坏票'
 		        }
 
-	        	document.getElementById('roles_label').innerHTML += '<br><br>其他说明：1）鼠标移动至圆圈上方，将显示此轮任务或投票信息 2）点击玩家卡牌以选人'
+	        	document.getElementById('roles_label').innerHTML += '<br><br>其他说明：1）鼠标移动至圆圈上方，将显示此轮任务或投票信息 2）点击玩家卡牌以选人<br><br><br><br>'
 	        	//set state to game started
 	        	that.state = 2
 	        	that.socket.emit("started")
