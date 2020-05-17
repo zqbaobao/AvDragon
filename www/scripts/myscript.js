@@ -124,9 +124,12 @@ class AvLong{
 		//register done
 
 		//register socket callbacks
-		this.socket.on('connect', function() {
-			
-        });
+		// this.socket.on('ping', function() {
+		// 	console.log("ping fired")
+  //       });
+		// this.socket.on('pong', function() {
+		// 	console.log("pong received")
+  //       });
 
         this.socket.on('update_ready_info', function(count_connected, count_ready, names, room_name) {
         	if(that.state == 1){

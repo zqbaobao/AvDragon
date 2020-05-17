@@ -2,8 +2,8 @@ var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
     io = require('socket.io')(server, {
-        pingInterval: 800,
-        pingTimeout: 60000,
+        pingInterval: 2000,
+        pingTimeout: 90000,
         upgradeTimeout: 100000
     })
 app.use('/', express.static(__dirname + '/www'))
