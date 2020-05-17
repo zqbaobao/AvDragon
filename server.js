@@ -47,6 +47,13 @@ class Rules{
                 "莫甘娜": ["刺客", "莫德雷德"],
                 "刺客": ["莫甘娜", "莫德雷德"],
                 "莫德雷德": ["刺客", "莫甘娜"]
+            },
+            10: {
+                "梅林": ["刺客", "莫甘娜", "奥伯伦"],
+                "派西": ["梅林", "莫甘娜"],
+                "莫甘娜": ["刺客", "莫德雷德"],
+                "刺客": ["莫甘娜", "莫德雷德"],
+                "莫德雷德": ["刺客", "莫甘娜"]
             }
         }
 
@@ -54,21 +61,24 @@ class Rules{
             6: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民"],
             7: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "奥伯伦"],
             8: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "平民", "坏人"],
-            9: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "平民", "平民", "莫德雷德"]
+            9: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "平民", "平民", "莫德雷德"],
+            10: ["梅林", "派西", "莫甘娜", "刺客", "平民", "平民", "平民", "平民", "莫德雷德", "奥伯伦"]
         }
 
         this.success_needed = {
             6: [2,3,4,3,4],
             7: [2,3,3,3,4],
             8: [3,4,4,4,5],
-            9: [3,4,4,4,5]
+            9: [3,4,4,4,5],
+            10: [3,4,4,4,5]
         }
 
         this.group_sizes = {
             6: [2,3,4,3,4],
             7: [2,3,3,4,4],
             8: [3,4,4,5,5],
-            9: [3,4,4,5,5]
+            9: [3,4,4,5,5],
+            10: [3,4,4,5,5]
         }
     }
 }
@@ -107,7 +117,11 @@ class Player{
                 thumbs[player.array_index] = role
             }
         }
-        this.socket.emit("game_start", this.role, this.array_index, thumbs, names, rooms[this.room_name].group_sizes)
+        let huxian = -1
+        if(rooms[this.room_name].players.length == 10){
+            huxian = rooms[this.room_name].huxian
+        }
+        this.socket.emit("game_start", this.role, this.array_index, thumbs, names, rooms[this.room_name].group_sizes, huxian)
 
         // old hardcoded rule for 6 players
         // if(this.role == "梅林"){
@@ -169,6 +183,7 @@ class Game_Controller{
         this.mission_group = []
 
         //outer round info
+        this.huxian = null
         this.outer_round = 0
         this.wins = 0
 
@@ -219,7 +234,7 @@ class Game_Controller{
         this.game_stage = 1;
         //elect a leader first
         this.leader = Math.floor(Math.random() * this.players.length)
-
+        this.huxian = (this.leader + this.players.length - 1) % this.players.length
         for(const player of this.players){
             player.signal_game_start()
         }
@@ -249,6 +264,10 @@ class Game_Controller{
 
     signal_update_ready_info(){
         io.to(this.room_name).emit('update_ready_info', count_sockets(this.room_name), this.players.length, this.get_all_player_names(), this.room_name)
+    }
+
+    signal_huxian_start(){
+        io.to(this.room_name).emit("huxian_start", this.huxian)
     }
 
     handle_vote_result(){
@@ -318,8 +337,14 @@ class Game_Controller{
         io.to(this.room_name).emit("mission_result", win_flag, this.outer_round, mission_info, (this.leader + this.players.length - 1) % this.players.length)
 
         if(this.count_wins == 3){
-
-            io.to(this.room_name).emit("kill_start")
+            let bad_guys = {}
+            for(let player of this.players){
+                let role = player.role
+                if(role == "刺客" || role == "莫甘娜" || role == "坏人" || role == "奥伯伦" || role == "莫德雷德"){
+                    bad_guys[player.array_index] = role
+                }
+            }
+            io.to(this.room_name).emit("kill_start", bad_guys)
             return
         }
         if(this.outer_round + 1 - this.count_wins == 3){
@@ -327,6 +352,14 @@ class Game_Controller{
             io.to(this.room_name).emit("lost", this.roles, false)
             this.init()
             return
+        }
+
+        if(this.players.length == 10 && this.outer_round >= 1){
+            //for huxian
+            this.signal_huxian_start()
+        }
+        else{
+            io.to(this.room_name).emit("speaking_start", (this.leader + this.players.length - 2) % this.players.length)
         }
 
         this.mission_group = []
@@ -424,7 +457,7 @@ io.on('connection', function(socket) {
         if(player.room_name == "" || game_controller.game_stage != 0){
             return
         }
-        if(game_controller.players.length >= 6 && game_controller.players.length <= 9){
+        if(game_controller.players.length >= 6 && game_controller.players.length <= 10){
             //init rules for this game
             game_controller.roles = game_controller.rules.roles[game_controller.players.length]
             game_controller.success_needed = game_controller.rules.success_needed[game_controller.players.length]
@@ -496,6 +529,23 @@ io.on('connection', function(socket) {
 
                 game_controller.handle_vote_result()
         }
+    })
+
+    socket.on('huxian_done', function(id_picked){
+        let game_controller = rooms[player.room_name]
+        if(player.room_name == "" || game_controller.game_stage != 1){
+            return
+        }
+
+        let role = game_controller.players[id_picked].role
+        if(role == "刺客" || role == "莫甘娜" || role == "坏人" || role == "奥伯伦" || role == "莫德雷德"){
+            io.to(player.room_name).emit("check_done", false, player.array_index, id_picked)
+        }
+        else{
+            io.to(player.room_name).emit("check_done", true, player.array_index, id_picked)
+        }
+        game_controller.huxian = id_picked
+        io.to(player.room_name).emit("speaking_start", (game_controller.leader + game_controller.players.length - 2) % game_controller.players.length)
     })
 
     socket.on('mission_done', function(mission) {

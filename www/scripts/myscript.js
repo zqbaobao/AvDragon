@@ -44,8 +44,8 @@ class AvLong{
 	constructor(){
 		var that = this;
 
-		// document.getElementById("player_list").innerHTML = that.generate_player_circle(9)
-		// that.set_player_avatar_positions(9)
+		// document.getElementById("player_list").innerHTML = that.generate_player_circle(10)
+		// that.set_player_avatar_positions(10)
 		// return
 		this.socket = io.connect()
 
@@ -137,7 +137,7 @@ class AvLong{
 	        }
         });
 
-        this.socket.on('game_start', function(my_role, my_id, my_thumbs, names, group_sizes) {
+        this.socket.on('game_start', function(my_role, my_id, my_thumbs, names, group_sizes, huxian) {
         	if(that.state == 1){
 	        	//hide login wrapper
 	        	document.getElementById('login_wrapper').style.display = 'none'
@@ -178,6 +178,11 @@ class AvLong{
 	        		}
 	        	}
 
+	        	//show huxian
+	        	if(huxian != -1){
+	        		document.getElementById("huxian_img_" + huxian).style.display = "block"
+	        	}
+
 	        	//set group size requirements
 	        	for(let i = 0; i < 5; i++){
 	        		document.getElementById("outer_round_" + i).innerHTML = group_sizes[i]
@@ -197,6 +202,9 @@ class AvLong{
 		        }
 		        else if(that.count_player  == 9){
 		        	document.getElementById('roles_label').innerHTML = '游戏配置：9人，梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客，第四轮需要两张坏票'
+		        }
+		        else if(that.count_player  == 10){
+		        	document.getElementById('roles_label').innerHTML = '游戏配置：10人，梅林、派西维尔、忠臣*4 vs 莫德雷德、莫甘娜、刺客、奥伯伦，第四轮需要两张坏票'
 		        }
 
 	        	document.getElementById('roles_label').innerHTML += '<br><br>其他说明：1）鼠标移动至圆圈上方，将显示此轮任务或投票信息 2）点击玩家卡牌以选人'
@@ -219,6 +227,8 @@ class AvLong{
         		that.reset_avatar_border();
         		document.getElementById("id_label_" + (leader + that.count_player - 1) % that.count_player).innerHTML = "" + ((leader + that.count_player - 1) % that.count_player + 1)
         		document.getElementById("id_label_" + leader).innerHTML = "" + (leader + 1) + ": 队长"
+        		document.getElementById("player_frame_" + leader).style.outline = "thick solid yellow"
+
         		document.getElementById("inner_round_" + inner_round).style.backgroundColor = "yellow"
         		if(leader == that.player.id){ 
         			that.state = 4
@@ -316,16 +326,43 @@ class AvLong{
 	        	that.reset_avatar_name()
 	        	document.getElementById("id_label_" + leader).innerHTML = "" + (leader + 1) + ": 队长"
 
-	        	if(that.player.id == (leader - 1 + that.count_player) % that.count_player){
-        			document.getElementById("speaking_done_button").style.display = "block";
-        		}
-        		document.getElementById("name_label_" + (leader - 1 + that.count_player) % that.count_player).innerHTML = that.player_names[(leader - 1 + that.count_player) % that.count_player] + ": 发言"
-        		document.getElementById("avatar_button_" + (leader - 1 + that.count_player) % that.count_player).style.outline = "thick solid yellow"
-        		document.getElementById("status_label").innerHTML = '发言中, 发言玩家: ' + that.player_names[(leader - 1 + that.count_player) % that.count_player]
-    			// document.getElementById("mission_history").innerHTML += mission_info
-    			// that.set_outer_round(outer_round)
+	        	// in the past, the player directly starts speaking, now, needs to wait the speaking start signal
+	        	// if(that.player.id == (leader - 1 + that.count_player) % that.count_player){
+        		// 	document.getElementById("speaking_done_button").style.display = "block";
+        		// }
+        		// document.getElementById("name_label_" + (leader - 1 + that.count_player) % that.count_player).innerHTML = that.player_names[(leader - 1 + that.count_player) % that.count_player] + ": 发言"
+        		// document.getElementById("avatar_button_" + (leader - 1 + that.count_player) % that.count_player).style.outline = "thick solid yellow"
+        		// document.getElementById("status_label").innerHTML = '发言中, 发言玩家: ' + that.player_names[(leader - 1 + that.count_player) % that.count_player]
 	        }
         });
+
+        this.socket.on('huxian_start', function(id){
+        	if(that.state == 2){
+        		if(that.player.id == id){
+        			that.state = 7
+        		}
+        		that.reset_avatar_name()
+        		document.getElementById("status_label").innerHTML = '验人中, 湖中仙子: ' + that.player_names[id]
+    			document.getElementById("player_frame_" + id).style.outline = "thick solid pink"
+        	}	
+        })
+
+        this.socket.on('check_done', function(is_good, old_huxian, new_huxian){
+        	if(that.state == 2){
+        		that.clear_is_good_img()
+        		that.clear_huxian_img()
+        		document.getElementById("huxian_img_" + new_huxian).style.display = "block"
+        		if(that.player.id == old_huxian){
+        			document.getElementById("is_good_img_" + new_huxian).style.display = "block"
+        			if(is_good == true){
+						document.getElementById("is_good_img_" + new_huxian).src = "../img/thumb.png";
+        			}
+        			else{
+        				document.getElementById("is_good_img_" + new_huxian).src = "../img/thumb_down.png";
+        			}
+        		}
+        	}	
+        })
 
         this.socket.on('speaking_start', function(id){
         	if(that.state == 2){
@@ -340,12 +377,16 @@ class AvLong{
         	}
         });
 
-        this.socket.on('kill_start', function(){
+        this.socket.on('kill_start', function(bad_guys){
         	that.reset_avatar_name()
         	that.reset_avatar_border()
         	that.reset_avatar_id()
         	document.getElementById("speaking_done_button").style.display = "none";
+
         	if(that.state == 2){
+	        	for(let id in bad_guys){
+	    			that.set_role(bad_guys[id], id)
+	        	}
         		document.getElementById("status_label").innerHTML = '坏人刺杀中'
         		if(that.player.role == "刺客"){
         			document.getElementById("status_label").innerHTML = ', 选择卡牌刺杀'
@@ -372,7 +413,7 @@ class AvLong{
 	        	}
 	        	document.getElementById("result_wrapper").style.display = "block"
 	    		document.getElementById("kill_info").textContent = "刺杀失败"
-	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜" || that.player.role == "坏人" || my_role == "奥伯伦" || that.player.role == "莫德雷德"){
+	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜" || that.player.role == "坏人" || that.player.role == "奥伯伦" || that.player.role == "莫德雷德"){
 	    			document.getElementById("result_info").textContent = "胜败乃兵家常事，大侠请重新来过"
 	        	}
 	        	else{
@@ -401,7 +442,7 @@ class AvLong{
 	        	else{
 	        		document.getElementById("kill_info").textContent = ""
 	        	}
-	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜" || that.player.role == "坏人" || my_role == "奥伯伦" || that.player.role == "莫德雷德"){
+	        	if(that.player.role == "刺客" || that.player.role == "莫甘娜" || that.player.role == "坏人" || that.player.role == "奥伯伦" || that.player.role == "莫德雷德"){
 	        		document.getElementById("result_info").textContent = "恭喜获得胜利"
 	        	}
 	        	else{
@@ -446,6 +487,7 @@ class AvLong{
 		this.count_player = 0
 		this.group_size = 0
 		this.picked = new Set()
+		this.checked = null
 		this.killing = null
 		this.state = 0 
 		//0 not connected
@@ -455,6 +497,7 @@ class AvLong{
 		//4 picking group
 		//5 missioning
 		//6 voting
+		//6 huxian checking
 
 		//round rows
     	document.getElementById('outer_round_row').style.display = 'none'
@@ -481,6 +524,7 @@ class AvLong{
 
     	document.getElementById('login_wrapper').style.display = 'block'
 
+
     	// this.socket.emit('connect_request');
 	}
 
@@ -489,9 +533,15 @@ class AvLong{
 		for(let i = 0; i < num; i++){
 			ret += `
 			<div class="player_frame" id="player_frame_` + i +`">
-				<div><label class="id_label" id="id_label_` + i +`">` + (i + 1) +`</label></div>
-				<div><button class="avatar_button" id="avatar_button_` + i + `"></button></div>
-				<div><label class="name_label" id="name_label_` + i + `"></label></div>
+				<div style="text-align:center; white-space:nowrap; width: 120px;">
+					<div><label class="id_label" id="id_label_` + i +`">` + (i + 1) +`</label></div>
+					<div><button class="avatar_button" id="avatar_button_` + i + `"></button></div>
+					<div><label class="name_label" id="name_label_` + i + `"></label></div>
+				</div>
+				<div style="margin-top:27px;display:block">
+					<image style="display:none" id="is_good_img_` + i + `" src="../img/thumb_down.png" width="40px" height="40px">
+					<image style="display:none" id="huxian_img_` + i + `" src="../img/huxian.png" width="40px" height="55px">
+				</div>
 			</div>
 			`
 		}
@@ -500,7 +550,7 @@ class AvLong{
 
 	set_player_avatar_positions(num){
 		for(let i = 0; i < num; i++){
-			let xy = tool.calc_pos_in_circule(170, i, num, 280, 310)
+			let xy = tool.calc_pos_in_circule(170, i, num, 395, 310 + (num-6)*7)
 			document.getElementById("player_frame_" + i).style.left = xy[0]
 			document.getElementById("player_frame_" + i).style.top = xy[1]
 		}
@@ -544,6 +594,21 @@ class AvLong{
 		// av.socket.emit("kill_done", event.target.id.substring(12))
 	}
 
+	check_button_callback(event){
+		if(parseInt(event.target.id.substring(14)) != av.checked ){ //button hasnt been clicked
+			if(av.checked != null){
+				document.getElementById("avatar_button_" + av.checked).style.outlineStyle = "none"
+			}
+			av.checked = parseInt(event.target.id.substring(14))
+			event.target.style.outline = "thick solid pink"
+		}
+		document.getElementById("confirm_button").disabled = false
+		document.getElementById("confirm_button").style.display = "block"
+
+		// av.set_kill_button_display("none")
+		// av.socket.emit("kill_done", event.target.id.substring(12))
+	}
+
 	avatar_button_callback(event){
 		if(av.state == 4){
 			//in this state, click avatar to pick group members
@@ -553,12 +618,16 @@ class AvLong{
 			//in this state, click avatar to kill meilin
 			av.kill_button_callback(event)
 		}
+		else if(av.state == 7){
+			av.check_button_callback(event)
+		}
 	}
 
 	confirm_button_callback(event){
+
+		event.target.disabled = true
+		event.target.style.display = "none"
 		if(av.state == 4){
-			event.target.disabled = true
-			event.target.style.display = "none"
 			av.state = 2	
 			//in this state, click avatar to pick group members
 			let picked = []
@@ -572,6 +641,10 @@ class AvLong{
 			//in this state, click avatar to kill meilin
 			av.state = 2
 			av.socket.emit("kill_done", av.killing)
+		}
+		else if(av.state == 7){
+			av.state = 2
+			av.socket.emit("huxian_done", av.checked)
 		}
 		console.log("clicked confirm")
 	}
@@ -595,9 +668,22 @@ class AvLong{
 		}
 	}
 
+	clear_huxian_img(){
+		for(let i = 0; i < this.count_player; i++){
+			document.getElementById("huxian_img_" + i).style.display = "none"
+		}
+	}
+
+	clear_is_good_img(){
+		for(let i = 0; i < this.count_player; i++){
+			document.getElementById("is_good_img_" + i).style.display = "none"
+		}
+	}
+
 	reset_avatar_border(){
 		for(let i = 0; i < this.count_player; i++){
 			document.getElementById("avatar_button_" + i).style.border = "thick solid white"
+    		document.getElementById("player_frame_" + i).style.outlineStyle = "none"
 		}
 	}
 

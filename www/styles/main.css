@@ -122,12 +122,11 @@ html, body {
     display: block;
 }
 .player_frame{
-    display: block;
-    height: 170px;
-    width: 300px;
+    display: inline-flex;
+    
     border: none;
-    text-align: center;
-    margin-left: 30px;
+    text-align: left;
+    
     position: absolute;
 }
 .id_label{
@@ -148,7 +147,7 @@ html, body {
     font-size: 16px;
     cursor: pointer;
     border-radius: 15%;
-    background-image: url('../img/thumb.png');
+    background-image: url('../img/back.jpeg');
     
     background-position: 50% 50%;
     background-size: 100% 80%;
