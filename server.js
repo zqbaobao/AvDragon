@@ -1,7 +1,11 @@
 var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
-    io = require('socket.io').listen(server)
+    io = require('socket.io')(server, {
+        pingInterval: 800,
+        pingTimeout: 60000,
+        upgradeTimeout: 100000
+    })
 app.use('/', express.static(__dirname + '/www'))
 const port = process.env.PORT || 3000
 server.listen(port)
@@ -405,10 +409,9 @@ var rooms = {}
 io.on('connection', function(socket) {
 
     let player = new Player(socket)
-
+    console.log("new connection from " + socket.id)
     socket2player[socket.id] = player //currently useless
 
-	//register callbacks
 
     // now we use rooms, this becomes useless
     // socket.on('connect_request', function() {
@@ -603,11 +606,12 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
 
         let game_controller = rooms[player.room_name]
+
+        console.log("disconnect " + socket.id)
         if(player.room_name == ""){
             return
         }
 
-        console.log("disconnect")
         // console.log("connected = " + count_sockets(player.room_name))
 
         if(game_controller.game_stage == 0){
